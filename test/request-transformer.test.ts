@@ -110,6 +110,15 @@ describe('Request Transformer Module', () => {
 				expect(normalizeModel('openai/gpt-5.3-codex-xhigh')).toBe('gpt-5.3-codex');
 			});
 
+			it('should normalize gpt-5.3-codex-spark presets', async () => {
+				expect(normalizeModel('gpt-5.3-codex-spark')).toBe('gpt-5.3-codex-spark');
+				expect(normalizeModel('gpt-5.3-codex-spark-low')).toBe('gpt-5.3-codex-spark');
+				expect(normalizeModel('gpt-5.3-codex-spark-medium')).toBe('gpt-5.3-codex-spark');
+				expect(normalizeModel('gpt-5.3-codex-spark-high')).toBe('gpt-5.3-codex-spark');
+				expect(normalizeModel('gpt-5.3-codex-spark-xhigh')).toBe('gpt-5.3-codex-spark');
+				expect(normalizeModel('openai/gpt-5.3-codex-spark-xhigh')).toBe('gpt-5.3-codex-spark');
+			});
+
 			it('should normalize gpt-5.1 codex and mini slugs', async () => {
 				expect(normalizeModel('gpt-5.1-codex')).toBe('gpt-5.1-codex');
 				expect(normalizeModel('openai/gpt-5.1-codex')).toBe('gpt-5.1-codex');
@@ -132,6 +141,7 @@ describe('Request Transformer Module', () => {
 				expect(normalizeModel('GPT-5-HIGH')).toBe('gpt-5.1');
 				expect(normalizeModel('CODEx-MINI-LATEST')).toBe('gpt-5.1-codex-mini');
 				expect(normalizeModel('GPT-5.3-CODEX')).toBe('gpt-5.3-codex');
+				expect(normalizeModel('GPT-5.3-CODEX-SPARK')).toBe('gpt-5.3-codex-spark');
 				expect(normalizeModel('GPT-5.3-HIGH')).toBe('gpt-5.3');
 			});
 
@@ -948,6 +958,16 @@ describe('Request Transformer Module', () => {
 			expect(result.reasoning?.effort).toBe('high');
 		});
 
+		it('should default gpt-5.3-codex-spark to high effort', async () => {
+			const body: RequestBody = {
+				model: 'gpt-5.3-codex-spark',
+				input: [],
+			};
+			const result = await transformRequestBody(body, codexInstructions);
+			expect(result.model).toBe('gpt-5.3-codex-spark');
+			expect(result.reasoning?.effort).toBe('high');
+		});
+
 		it('should preserve xhigh for gpt-5.3 when requested', async () => {
 			const body: RequestBody = {
 				model: 'gpt-5.3-xhigh',
@@ -982,6 +1002,25 @@ describe('Request Transformer Module', () => {
 			};
 			const result = await transformRequestBody(body, codexInstructions, userConfig);
 			expect(result.model).toBe('gpt-5.3-codex');
+			expect(result.reasoning?.effort).toBe('xhigh');
+			expect(result.reasoning?.summary).toBe('detailed');
+		});
+
+		it('should preserve xhigh for gpt-5.3-codex-spark when requested', async () => {
+			const body: RequestBody = {
+				model: 'gpt-5.3-codex-spark-xhigh',
+				input: [],
+			};
+			const userConfig: UserConfig = {
+				global: { reasoningSummary: 'auto' },
+				models: {
+					'gpt-5.3-codex-spark-xhigh': {
+						options: { reasoningEffort: 'xhigh', reasoningSummary: 'detailed' },
+					},
+				},
+			};
+			const result = await transformRequestBody(body, codexInstructions, userConfig);
+			expect(result.model).toBe('gpt-5.3-codex-spark');
 			expect(result.reasoning?.effort).toBe('xhigh');
 			expect(result.reasoning?.summary).toBe('detailed');
 		});
@@ -1105,6 +1144,20 @@ describe('Request Transformer Module', () => {
 			};
 			const result = await transformRequestBody(body, codexInstructions, userConfig);
 			expect(result.model).toBe('gpt-5.3-codex');
+			expect(result.reasoning?.effort).toBe('low');
+		});
+
+		it('should upgrade none to low for GPT-5.3-codex-spark (codex does not support none)', async () => {
+			const body: RequestBody = {
+				model: 'gpt-5.3-codex-spark',
+				input: [],
+			};
+			const userConfig: UserConfig = {
+				global: { reasoningEffort: 'none' },
+				models: {},
+			};
+			const result = await transformRequestBody(body, codexInstructions, userConfig);
+			expect(result.model).toBe('gpt-5.3-codex-spark');
 			expect(result.reasoning?.effort).toBe('low');
 		});
 

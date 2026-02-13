@@ -47,6 +47,14 @@ export function normalizeModel(model: string | undefined): string {
 	const normalized = modelId.toLowerCase();
 
 	// Priority order for pattern matching (most specific first):
+	// 1. GPT-5.3 Codex Spark (latest text-only coding model)
+	if (
+		normalized.includes("gpt-5.3-codex-spark") ||
+		normalized.includes("gpt 5.3 codex spark")
+	) {
+		return "gpt-5.3-codex-spark";
+	}
+
 	// 1. GPT-5.3 Codex (newest codex model)
 	if (
 		normalized.includes("gpt-5.3-codex") ||

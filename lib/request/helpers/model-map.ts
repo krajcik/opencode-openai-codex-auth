@@ -12,9 +12,19 @@
  * Value: The normalized model name to send to the API
  */
 export const MODEL_MAP: Record<string, string> = {
-// ============================================================================
-// GPT-5.3 Models (supports none/low/medium/high/xhigh per OpenAI API docs)
-// ============================================================================
+	// ============================================================================
+	// GPT-5.3 Codex Spark Models (text-only low-latency variant)
+	// ============================================================================
+	"gpt-5.3-codex-spark": "gpt-5.3-codex-spark",
+	"gpt-5.3-codex-spark-none": "gpt-5.3-codex-spark",
+	"gpt-5.3-codex-spark-low": "gpt-5.3-codex-spark",
+	"gpt-5.3-codex-spark-medium": "gpt-5.3-codex-spark",
+	"gpt-5.3-codex-spark-high": "gpt-5.3-codex-spark",
+	"gpt-5.3-codex-spark-xhigh": "gpt-5.3-codex-spark",
+
+	// ============================================================================
+	// GPT-5.3 Models (supports none/low/medium/high/xhigh per OpenAI API docs)
+	// ============================================================================
 	"gpt-5.3": "gpt-5.3",
 	"gpt-5.3-none": "gpt-5.3",
 	"gpt-5.3-low": "gpt-5.3",
